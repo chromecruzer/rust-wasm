@@ -177,3 +177,112 @@ Once the build is successful, you should see the generated `pkg/` directory cont
 You can now use the WebAssembly module in your Node.js project as described earlier.
 
 Let me know if you encounter any other issues!
+
+
+When using `wasm-pack`, the `--target` option specifies the environment for which the WebAssembly module is built. Each target tailors the generated WebAssembly and JavaScript bindings to a specific runtime or usage scenario. Below are the available targets:
+
+---
+
+### 1. **`--target nodejs`**
+- **Purpose**: Build for Node.js runtime.
+- **Usage**: When you want to use the WebAssembly module in a Node.js environment.
+- **Generated Files**: 
+  - A `.wasm` file.
+  - A JavaScript file/module that works with Node.js (`require` or ES Modules).
+- **Example**:
+  ```bash
+  wasm-pack build --target nodejs
+  ```
+
+---
+
+### 2. **`--target web`**
+- **Purpose**: Build for use in modern web browsers.
+- **Usage**: When your WebAssembly module will be loaded and executed in the browser.
+- **Generated Files**: 
+  - A `.wasm` file.
+  - A JavaScript file/module that uses the WebAssembly JavaScript APIs for browsers.
+  - The `.wasm` file is usually loaded dynamically by the JavaScript bindings.
+- **Example**:
+  ```bash
+  wasm-pack build --target web
+  ```
+- **How to Use**:
+  Import the module into your browser JavaScript code:
+  ```javascript
+  import init, { my_function } from './my_module.js';
+
+  async function run() {
+      await init(); // Initialize the WASM module
+      console.log(my_function(42));
+  }
+  run();
+  ```
+
+---
+
+### 3. **`--target bundler`**
+- **Purpose**: Build for use with JavaScript bundlers like Webpack, Rollup, or Vite.
+- **Usage**: When your WebAssembly module will be part of a larger application that uses a bundler.
+- **Generated Files**:
+  - A `.wasm` file.
+  - JavaScript bindings optimized for bundlers.
+  - These bindings allow the `.wasm` file to be correctly imported as part of the bundled application.
+- **Example**:
+  ```bash
+  wasm-pack build --target bundler
+  ```
+- **How to Use**: The `.wasm` file will be handled automatically by the bundler, and you can import the bindings in your JavaScript/TypeScript code.
+
+---
+
+### 4. **`--target no-modules`**
+- **Purpose**: Build for environments that do not support ES Modules (legacy web environments).
+- **Usage**: When you need the module to be compatible with older browsers or non-modular environments.
+- **Generated Files**:
+  - A `.wasm` file.
+  - A single JavaScript file with all necessary bindings (using a global namespace, like `window.MyWasmModule`).
+- **Example**:
+  ```bash
+  wasm-pack build --target no-modules
+  ```
+
+---
+
+### 5. **`--target deno`** (Experimental)
+- **Purpose**: Build for the Deno runtime.
+- **Usage**: When you want to use WebAssembly in the Deno JavaScript/TypeScript runtime.
+- **Generated Files**:
+  - A `.wasm` file.
+  - A Deno-compatible JavaScript file/module.
+- **Example**:
+  ```bash
+  wasm-pack build --target deno
+  ```
+
+---
+
+### 6. **`--target webworker`**
+- **Purpose**: Build for use in Web Workers in a browser environment.
+- **Usage**: When the WebAssembly module will run inside a web worker (separate thread in the browser).
+- **Generated Files**:
+  - A `.wasm` file.
+  - JavaScript bindings specifically designed to work within Web Workers.
+- **Example**:
+  ```bash
+  wasm-pack build --target webworker
+  ```
+
+---
+
+### Summary of Targets:
+| Target         | Purpose                          | Typical Environment      |
+|----------------|----------------------------------|--------------------------|
+| `nodejs`       | Node.js runtime                 | Backend development      |
+| `web`          | Modern browsers                 | Web apps                 |
+| `bundler`      | JavaScript bundlers (e.g., Webpack, Rollup) | Bundled web apps   |
+| `no-modules`   | Legacy browsers                 | Old browser support      |
+| `deno`         | Deno runtime                    | Deno apps                |
+| `webworker`    | Web Workers                     | Browser-based workers    |
+
+Choose the target based on the intended environment for your WebAssembly module. Each target ensures compatibility with its respective runtime.
